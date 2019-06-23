@@ -1,0 +1,2 @@
+---
+nginx_index_file: index.html.j2

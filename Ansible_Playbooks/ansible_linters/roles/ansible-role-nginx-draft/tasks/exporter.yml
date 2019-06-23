@@ -1,0 +1,54 @@
+---
+
+- name: Create system group for nginx-exp
+  become: true
+  group:
+    name: nginx-exp
+    state: present
+
+- name: Create system user nginx-exp
+  become: true
+  user:
+    name: nginx-exp
+    group: nginx-exp
+
+- name: download nginx exporter package
+  become: true
+  get_url:
+    url: https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.3.0/nginx-prometheus-exporter-0.3.0-linux-amd64.tar.gz
+    dest: /etc/nginx-exporter.tar.gz
+
+- name: unpackage nginx exporter
+  become: true
+  unarchive:
+    remote_src: true
+    src: /etc/nginx-exporter.tar.gz
+    dest: /usr/local/bin/
+
+- name: creating /etc/systemd/system/nginx_exporter.service file
+  become: true
+  template:
+    src: nginx_exporter.service.j2
+    dest: /etc/systemd/system/nginx_exporter.service
+
+- name: start and enable nginx_exporter service
+  become: true
+  systemd:
+    state: started
+    name: nginx_exporter
+    enabled: true
+
+- name: TEST port 9113 for nginx_up 1
+  become: true
+  uri:
+    url: http://localhost:9113/metrics
+    status_code: 200
+    return_content: true
+  register: this
+  failed_when: "'nginx_up 1' not in this.content"
+
+- name: TEST port 80 for status code 200
+  become: true
+  uri:
+    url: http://localhost:80
+    status_code: 200

@@ -1,0 +1,79 @@
+---
+- hosts: all
+  tasks:
+    - name: install common tools
+      become: true
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - bind-utils
+        - net-tools
+        - vim
+        - wget
+ 
+    - name: add user 
+      become: true
+      user:
+        name: nsmeds
+        comment: Niko Smeds
+        shell: /bin/bash
+        group: wheel
+
+    - name: secure home directory
+      become: true
+      file:
+        mode: 0750
+        path: /home/nsmeds
+
+    - name: add public ssh key
+      become: true
+      authorized_key:
+        user: nsmeds
+        state: present
+        key: "{{ lookup('file', '/home/slam/.ssh/id_rsa.pub') }}"
+        path: /home/nsmeds/.ssh/authorized_keys
+
+    - name: passwordless sudo
+      become: true
+      lineinfile:
+        create: yes
+        state: present
+        line: 'nsmeds ALL=(root) NOPASSWD:ALL'
+        mode: 0440
+        validate: '/usr/sbin/visudo -cf %s'
+        path: /etc/sudoers
+
+    - name: yum update current packages
+      become: true
+      yum:
+        state: latest
+        name: '*'
+
+    - name: install epel-release
+      become: true
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: install nginx specific version
+      become: true
+      yum:
+        name: nginx-1.12.2-2.el7
+        state: present
+
+    - name: replace index.html with local file
+      become: true
+      copy:
+        src: /ConfigurationManagement/configmanage/ansible_introduction/files/index.html
+        dest: /usr/share/nginx/html/index.html
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: start nginx service
+      become: true
+      service:
+        name: nginx
+        state: started
+        enabled: yes

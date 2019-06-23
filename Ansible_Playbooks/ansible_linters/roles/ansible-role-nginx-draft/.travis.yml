@@ -1,0 +1,12 @@
+---
+lanuage: python
+python: "2.7"
+
+install:
+  - pip install --user ansible
+  - pip install --user ansible-lint
+  - pip install --user yamllint
+
+script:
+  - ansible-lint ./
+  - yamllint ./

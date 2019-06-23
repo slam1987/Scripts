@@ -1,0 +1,56 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: import ssh key
+      ec2_key:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}" 
+        name: "{{ aws_ec2_key_name }}"
+        key_material: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+        region: "{{ aws_region }}"
+      tags: ssh
+
+    - name: create security group
+      ec2_group:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        name: "{{ aws_security_group_name }}"
+        description: "{{ aws_security_group_name }}"
+        vpc_id: "{{ vpc_var.vpc.id }}"
+        region: "{{ aws_region }}"
+        rules:
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: "{{ aws_whitelist_cidr }}"
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: "{{ aws_whitelist_cidr }}"
+          - proto: icmp
+            from_port: -1
+            to_port: -1
+            cidr_ip: 0.0.0.0/0
+      tags: sg
+
+    - name: create EC2 instances
+      ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        vpc_subnet_id: "{{ sub_var.subnet.id }}"
+        instance_type: "{{ aws_ec2_instance_type }}"
+        image: "{{ aws_ec2_ami }}"
+        group: "{{ aws_security_group_name }}"
+        key_name: "{{ aws_ec2_key_name }}"
+        region: "{{ aws_region }}"
+        exact_count: "{{ aws_ec2_instance_count }}"
+        instance_tags:
+            foo: bar
+        count_tag: foo
+      tags: ec2

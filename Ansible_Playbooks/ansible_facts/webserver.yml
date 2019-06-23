@@ -1,0 +1,48 @@
+---
+- hosts: all
+  tasks:
+
+    - name: install common tools
+      become: true
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - bind-utils
+        - net-tools
+        - vim
+        - wget
+
+    - name: yum update current packages
+      become: true
+      yum:
+        state: latest
+        name: '*'
+
+    - name: install epel-release
+      become: true
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: install nginx specific version
+      become: true
+      yum:
+        name: nginx-1.12.2-2.el7
+        state: present
+
+    - name: index.html
+      become: true
+      template:
+        src: /ConfigurationManagement/configmanage/ansible_facts/templates/index.html.j2
+        dest: /usr/share/nginx/html/index.html
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: start nginx service
+      become: true
+      service:
+        name: nginx
+        state: started
+        enabled: yes

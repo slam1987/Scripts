@@ -1,0 +1,4 @@
+---
+- import_playbook: vpc.yml
+- import_playbook: ec2.yml
+- import_playbook: webserver.yml

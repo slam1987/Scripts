@@ -1,0 +1,43 @@
+---
+- hosts: all
+  vars:
+    users: ['slam', 'nsmeds']
+    sshkeys:
+      slam: 'slam.pub'
+      nsmeds: 'nsmeds.pub'
+  tasks:
+
+    - name: add system users
+      become: true
+      user:
+        name: "{{ item }}"
+        comment: "{{ item }}"
+        shell: /bin/bash
+        group: wheel
+      with_items: "{{ users }}"
+
+    - name: secure home directories
+      become: true
+      file:
+        mode: 0750
+        path: /home/{{ item }}
+      with_items: "{{ users }}"
+
+    - name: add public ssh key
+      become: true
+      authorized_key:
+        user: "{{ item.key }}"
+        state: present
+        key: "{{ lookup('file', '{{ item.value }}') }}"
+      with_dict: "{{ sshkeys }}"
+
+    - name: sudoless access
+      become: true
+      lineinfile:
+        create: yes
+        state: present
+        line: '{{ item }} ALL=(root) NOPASSWD:ALL'
+        mode: 0440
+        validate: '/usr/sbin/visudo -cf %s'
+        path: /etc/sudoers
+      with_items: "{{ users }}"

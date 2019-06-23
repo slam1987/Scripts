@@ -1,0 +1,64 @@
+---
+
+- name: rpm key
+  become: true
+  rpm_key:
+    key: "{{ nginx_signing_key }}"
+
+- name: add nginx repository
+  become: true
+  yum_repository:
+    name: nginx
+    baseurl: "{{ nginx_base_repository }}"
+    description: nginx repository
+    enabled: true
+    gpgcheck: true
+
+- name: install nginx
+  become: true
+  package:
+    name: nginx
+    state: present
+  notify: start nginx
+
+- name: override default home page
+  become: true
+  copy:
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Hello world.</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style>body {font: normal 18px Arial; margin: 4em;}</style>
+      </head>
+      <body>
+        <p>
+          YAML supports multi-line blocks using specific indicators.<br />
+          Read more at <a href="https://yaml-multiline.info">
+          YAML-multiline.info</a>.
+        </p>
+      </body>
+      </html>
+    dest: /usr/share/nginx/html/index.html
+
+- name: append contents to /etc/nginx/conf.d/default.conf
+  become: true
+  blockinfile:
+    path: /etc/nginx/conf.d/default.conf
+    insertbefore: "#error_page  404              /404.html;"
+    block: |
+      location /nginx_status {
+          stub_status on;
+          allow 127.0.0.1;
+          deny all;
+      }
+
+- name: start nginx service
+  become: true
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- include: exporter.yml

@@ -1,0 +1,12 @@
+---
+- import_playbook: users.yml
+
+- hosts: webservers
+  become: true
+  roles:
+    - webserver
+
+- hosts: loadbalancers
+  become: true
+  roles:
+    - role: geerlingguy.haproxy

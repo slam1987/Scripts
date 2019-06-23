@@ -1,0 +1,24 @@
+---
+
+- hosts: all
+  tasks:
+
+    - name: install nginx latest
+      become: true
+      command: amazon-linux-extras install -y nginx1.12
+
+    - name: index.html
+      become: true
+      template:
+        src: index.html.j2
+        dest: /usr/share/nginx/html/index.html
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: start nginx service
+      become: true
+      service:
+        name: nginx
+        state: started
+        enabled: yes

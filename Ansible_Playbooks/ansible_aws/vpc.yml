@@ -1,0 +1,56 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: create virtual private cloud
+      ec2_vpc_net:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        name: "{{ aws_vpc_name }}"
+        cidr_block: 10.0.0.0/16
+        region: "{{ aws_region }}"
+      register: vpc_var
+      tags: vpc
+
+    - name: create vpc internet gateway
+      ec2_vpc_igw:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        vpc_id: "{{ vpc_var.vpc.id }}"
+        region: "{{ aws_region }}"
+        state: present
+      register: igw_var
+      tags: igw
+
+    - name: create vpc subnet
+      ec2_vpc_subnet:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        vpc_id: "{{ vpc_var.vpc.id }}"
+        region: "{{ aws_region }}"
+        cidr: 10.0.1.0/24
+        az: us-east-1a
+        map_public: true
+      register: sub_var
+      tags: subnet
+
+    - name: create vpc route table
+      ec2_vpc_route_table: 
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        security_token: "{{ aws_session_token }}"
+        vpc_id: "{{ vpc_var.vpc.id }}"
+        subnets: "{{ sub_var.subnet.id }}"
+        region: "{{ aws_region }}"
+        tags:
+          Name: Test
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw_var.gateway_id }}"
+      tags: routetable

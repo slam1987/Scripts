@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello world.</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style>body {font: normal 18px Arial; margin: 4em;}</style>
+</head>
+<body>
+  <h2>
+    Hello world.
+  </h2>
+  <p>
+    Private IP: {{ ansible_eth0.ipv4.address }} {{ ansible_eth0.ipv4.netmask }}<br />
+    Interface: {{ ansible_eth0.device }}<br />
+    MAC Address: {{ ansible_eth0.macaddress }}<br />
+    BIOS Version: {{ ansible_bios_version }}<br />
+    Kernel Version: {{ ansible_kernel }}<br />
+    Current Ansible User: {{ ansible_env.USER }}<br />
+  </p>
+</body>
+</html>

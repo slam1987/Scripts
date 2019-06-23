@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Default home page.</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style>body {font: normal 18px Arial; margin: 4em;}</style>
+</head>
+<body>
+  <h2>
+    Default home page.
+  </h2>
+  <p>
+    Private IP: {{ ansible_eth1['ipv4'].address }}<br />
+    DNS server: {{ ansible_dns['nameservers'] | first }}<br />
+    Kernel version: {{ ansible_kernel }}<br />
+    Seconds since Ansible last ran: {{ ansible_uptime_seconds }}<br />
+  </p>
+</body>
+</html>
