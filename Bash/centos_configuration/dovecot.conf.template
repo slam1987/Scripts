@@ -1,0 +1,8 @@
+protocols = "imap lmtp"
+login_trusted_networks = 10.0.0.0/8
+dict {
+  #quota = mysql:/etc/dovecot/dovecot-dict-sql.conf.ext
+  #expire = sqlite:/etc/dovecot/dovecot-dict-sql.conf.ext
+}
+!include conf.d/*.conf
+!include_try local.conf

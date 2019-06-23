@@ -1,0 +1,6 @@
+option  domain-name "DOMAIN_NAME";
+option  domain-name-servers DNS_IP;
+SUBNET_AREA
+
+host www {HOST_AREA
+        }

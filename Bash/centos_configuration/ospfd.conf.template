@@ -1,0 +1,13 @@
+hostname ospfd
+password zebra
+log stdout
+!
+!
+!
+INTERFACES
+router ospf
+ ospf router-id RTR-ID
+ NET_START
+!
+line vty
+!

@@ -1,0 +1,12 @@
+$TTL 10s
+@	   		IN  	SOA   	SOA_HEADER. EMAIL_HEADER (
+                        		UNIQUE_ID
+                        		1200s
+                        		180s
+                        		1d
+                        		3600
+                        		)
+
+			IN     	NS     	NS_RECORD_NAME.
+RECORDS_START
+MX_START

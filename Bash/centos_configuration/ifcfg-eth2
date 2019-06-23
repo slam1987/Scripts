@@ -1,0 +1,10 @@
+# Automatically Generated
+
+NAME="eth2"
+DEVICE="eth2"
+ONBOOT="yes"
+BOOTPROTO="static"
+IPADDR="192.168.1.1"
+PREFIX="24"
+
+

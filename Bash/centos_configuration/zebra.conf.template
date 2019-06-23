@@ -1,0 +1,12 @@
+!
+!
+hostname Router
+password zebra
+enable password zebra
+!
+INTERFACES
+ip forwarding
+!
+!
+line vty
+!

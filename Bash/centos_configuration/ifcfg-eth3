@@ -1,0 +1,10 @@
+# Automatically Generated
+
+NAME="eth3"
+DEVICE="eth3"
+ONBOOT="yes"
+BOOTPROTO="static"
+IPADDR="195.55.11.1"
+PREFIX="24"
+
+

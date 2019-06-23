@@ -1,0 +1,10 @@
+DEVICE="wlp0s20f0u2"
+BOOTPROTO="static"
+TYPE="Wireless"
+ONBOOT=yes
+ESSID="wlp0s20f0u2"
+CHANNEL="6"
+MODE="Master"
+RATE="Auto"
+IPADDR="10.16.11.254"
+PREFIX="25"

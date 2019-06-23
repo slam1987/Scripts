@@ -1,0 +1,10 @@
+server:
+        ip-address: IP_BIND
+        do-ip6: no
+        include: "/etc/nsd/server.d/*.conf"
+        include: "/etc/nsd/conf.d/*.conf"
+
+remote-control:
+        control-enable: yes
+
+ZONE_AREA
